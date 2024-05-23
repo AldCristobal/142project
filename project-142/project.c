@@ -1,16 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define N 3
+#define MAX_NUMBERS 100
 
-int main(){
-	int start, move;
-	int nopts[N+2]; //array of top of stacks
-	int option[N+2][N+2]; //array of stacks of options
-	int i, candidate;
+int main() {
     int numSets;
-    int targetSum;
-    int matrix[100][100];
-    int subset[100];
+    int matrix[MAX_NUMBERS][MAX_NUMBERS];
+    int nopts[MAX_NUMBERS + 2]; // array of top of stacks
+    int option[MAX_NUMBERS + 2][MAX_NUMBERS + 2]; // array of stacks of options
+    int move, start;
+    int subset[MAX_NUMBERS];
+    int currentSum = 0;
     FILE *file = fopen("input.txt", "r");
 
     if (file == NULL) {
@@ -18,7 +17,7 @@ int main(){
         return EXIT_FAILURE;
     }
 
-    fscanf(file, "%d", &numSets); // Read the number of sets
+    fscanf(file, "%d", &numSets);
     
     for (int i = 0; i < numSets; i++) {
         int targetSum;
@@ -39,49 +38,65 @@ int main(){
             }
             printf("%d", matrix[i][j]);
         }
-        printf("}");
-        printf("\n");
+        printf("}\n");
         printf("k = %d\n", targetSum);
+        printf("Subsets:\n");
+
+        move = start = 0;
+        nopts[start] = 1;
+
+        while (nopts[start] > 0) { // while dummy stack is not empty
+            if (nopts[move] > 0) {
+                move++;
+                nopts[move] = 0; // initialize new move
+
+                if (move == 1) {
+                    for (int candidate = numIntegers - 1; candidate >= 0; candidate--) {
+                        nopts[move]++;
+                        option[move][nopts[move]] = candidate;
+                    }
+                } else {
+                    for (int candidate = numIntegers - 1; candidate >= 0; candidate--) {
+                        int isValid = 1;
+                        for (int k = move - 1; k >= 1; k--) {
+                            if (candidate == option[k][nopts[k]] || matrix[i][candidate] <= matrix[i][option[k][nopts[k]]]) {
+                                isValid = 0;
+                                break;
+                            }
+                        }
+                        if (isValid) {
+                            nopts[move]++;
+                            option[move][nopts[move]] = candidate;
+                        }
+                    }
+                }
+
+                currentSum = 0;
+                for (int k = 1; k < move; k++) {
+                    subset[k - 1] = matrix[i][option[k][nopts[k]]];
+                    currentSum += subset[k - 1];
+                }
+
+                if (currentSum == targetSum) {
+                    printf("{");
+                    for (int i = 0; i < move-1; i++) {
+                        if (i > 0) {
+                            printf(", ");
+                        }
+                        printf("%d", subset[i]);
+                    }
+                    printf("}\n");
+                }
+            } else {
+                move--;
+                nopts[move]--;
+            }
+        }
+
         printf("\n");
     }
 
     fclose(file);
 
-	move = start = 0; 
-	nopts[start]= 1;
-	
-	while (nopts[start] >0) //while dummy stack is not empty
-	{
-		if(nopts[move]>0) 
-		{
-			move++;
-			nopts[move]=0; //initialize new move
-
-			if(move == 1){
-				for(candidate = N; candidate >=1; candidate --) 
-				{
-					nopts[move]++;
-					option[move][nopts[move]] = candidate;         
-				}
-			}
-			else{
-				for(candidate=N;candidate>=1;candidate--)
-				{
-					for(i=move-1;i>=1;i--)
-						if(candidate==option[i][nopts[i]] || candidate >=option[i][nopts[i]]) break;
-					if(!(i>=1))
-						option[move][++nopts[move]] = candidate;
-				}
-			}
-		}
-		else 
-		{
-            for(i=1;i<move;i++)
-                printf("%2i",option[i][nopts[i]]);
-            printf("\n");
-			move--;
-			nopts[move]--;
-            
-		}
-	}
+    return 0;
 }
