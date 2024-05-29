@@ -44,6 +44,7 @@ int main() {
 
         move = start = 0;
         nopts[start] = 1;
+        int subsetChecker = 0;
 
         while (nopts[start] > 0) { // while dummy stack is not empty
             if (nopts[move] > 0) {
@@ -78,6 +79,7 @@ int main() {
                 }
 
                 if (currentSum == targetSum) {
+                    subsetChecker++;
                     printf("{");
                     for (int i = 0; i < move-1; i++) {
                         if (i > 0) {
@@ -92,7 +94,9 @@ int main() {
                 nopts[move]--;
             }
         }
-
+        if (subsetChecker == 0){
+            printf("There are no subsets available!");
+        }
         printf("\n");
     }
 
