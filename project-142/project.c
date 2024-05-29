@@ -5,8 +5,8 @@
 int main() {
     int numSets;
     int matrix[MAX_NUMBERS][MAX_NUMBERS];
-    int nopts[MAX_NUMBERS + 2]; // array of top of stacks
-    int option[MAX_NUMBERS + 2][MAX_NUMBERS + 2]; // array of stacks of options
+    int nopts[MAX_NUMBERS]; // array of top of stacks
+    int option[MAX_NUMBERS][MAX_NUMBERS]; // array of stacks of options
     int move, start;
     int subset[MAX_NUMBERS];
     int currentSum = 0;
@@ -66,8 +66,7 @@ int main() {
                             }
                         }
                         if (isValid) {
-                            nopts[move]++;
-                            option[move][nopts[move]] = candidate;
+                            option[move][++nopts[move]] = candidate;
                         }
                     }
                 }
@@ -95,7 +94,7 @@ int main() {
             }
         }
         if (subsetChecker == 0){
-            printf("There are no subsets available!");
+            printf("There are no subsets available! \n");
         }
         printf("\n");
     }
